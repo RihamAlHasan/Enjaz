@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إنجاز | متابعة الخطط والأداء المؤسسي</title>
+<style>
+:root{--green:#174d3e;--green2:#1a7559;--gold:#d5b56d;--bg:#f5f8f6;--line:#e2ebe6;--muted:#667a71}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#17382e;font:15px Tahoma,Arial,sans-serif}
+header{background:linear-gradient(120deg,#143f33,#226b54);color:#fff;padding:21px max(20px,5vw)}
+.header{max-width:1220px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand h1{font-size:29px;margin:0}.brand p{margin:7px 0 0;color:#cbded5;font-size:13px}
+.header-actions{display:flex;align-items:center;gap:12px}.chip{border:1px solid #a0c7b7;background:#e9f2ed;color:#1a4b38;padding:7px 12px;border-radius:30px;font-size:12px}
+#bell{background:rgba(255,255,255,.13);border:1px solid #8ab1a2;border-radius:12px;color:white;font-size:22px;position:relative;min-width:48px;height:46px;cursor:pointer}
+.count-badge{position:absolute;top:-8px;left:-8px;min-width:21px;padding:2px 5px;border-radius:20px;background:#be594b;color:white;font-size:12px}
+main{max-width:1220px;margin:auto;padding:30px 20px}h2{margin:0 0 8px;font-size:24px}h3{margin:0;font-size:18px}
+.muted{color:var(--muted)}.subtitle{margin:0 0 25px}.filters{display:flex;gap:14px;flex-wrap:wrap;align-items:end;margin:22px 0}
+label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:13px}
+select,button{font:inherit;border-radius:9px;padding:11px 14px}
+select{min-width:220px;border:1px solid #d2dfd7;background:white;color:#213e32}
+button{border:0;background:var(--green2);color:white;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.5}.outline{color:var(--green2);background:#edf5f1;border:1px solid #bbd2c6}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:20px}
+.card .big{font-size:34px;font-weight:bold;margin-top:10px;color:var(--green)}.card .hint{font-size:12px;color:var(--muted)}
+.panel{margin-top:22px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:820px}th,td{text-align:right;padding:13px;border-bottom:1px solid #e9efeb}
+th{font-size:12px;color:var(--muted);background:#fafcfb}td{font-size:13px}
+.progress{height:8px;background:#e3ece6;border-radius:8px;overflow:hidden;min-width:90px;margin-top:8px}
+.progress span{display:block;height:100%;background:#198865}.alert{color:#b14d44;font-weight:bold}.completed{color:#168261;font-weight:bold}
+.small-btn{padding:7px 12px;font-size:12px}.message{min-height:24px;color:#176f50}
+.notes{font-size:12px;line-height:1.9;color:var(--muted);padding-bottom:24px}
+#notifications{position:absolute;z-index:20;top:83px;left:max(20px,5vw);width:min(425px,calc(100vw - 40px));background:#fff;color:#183b30;box-shadow:0 16px 45px #123b2f35;border-radius:16px;border:1px solid var(--line);padding:18px}
+#notifications[hidden]{display:none}.notification{padding:13px 0;border-top:1px solid var(--line);display:flex;gap:12px;justify-content:space-between}
+.notification p{color:var(--muted);font-size:12px;margin:6px 0}.notification strong{font-size:13px}
+.notification.unread strong:before{content:"● ";color:#17835e}.notification button{font-size:11px;padding:7px;white-space:nowrap;height:fit-content}
+.empty{padding:20px;color:var(--muted);text-align:center}
+@media(max-width:740px){.cards{grid-template-columns:repeat(2,1fr)}.header{align-items:start}.brand h1{font-size:24px}.chip{display:none}main{padding:20px 14px}h2{font-size:21px}.filters label,select{width:100%}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header">
+  <div class="brand"><h1>إنجاز <span style="font-size:13px;font-weight:normal">| إدارة الخطط والأداء المؤسسي</span></h1><p>مديرية التنمية الإدارية — لوحة متابعة تجريبية</p></div>
+  <div class="header-actions"><span class="chip">بيانات افتراضية</span><button id="bell" aria-label="فتح مركز الإشعارات" aria-expanded="false">🔔<span id="unread" class="count-badge">0</span></button></div>
+ </div>
+</header>
+<section id="notifications" hidden aria-label="مركز الإشعارات">
+ <div class="panel-head"><h3>مركز الإشعارات</h3><button id="refresh-notifications" class="outline small-btn">تحديث</button></div>
+ <div class="muted" style="font-size:12px;margin-bottom:12px">رسائل توضيحية، وليست إشعارات فعلية من دوائر المديرية.</div>
+ <div id="notification-list">جاري التحميل…</div>
+</section>
+<main>
+ <h2>نظرة عامة على خطة العمل</h2>
+ <p class="muted subtitle">متابعة الأنشطة، مستوى التقدم، التعثر، والفترات الدورية من واجهة واحدة.</p>
+ <div class="filters">
+  <label>الفترة<select id="period"><option value="FY">السنة كاملة</option><option value="Q1">الربع الأول</option><option value="Q2">الربع الثاني</option><option value="Q3">الربع الثالث</option><option value="Q4">الربع الرابع</option><option value="H1">النصف الأول</option><option value="H2">النصف الثاني</option></select></label>
+  <label>الدائرة<select id="department"><option value="all">جميع الدوائر</option></select></label>
+  <button id="reload">تحديث العرض</button>
+ </div>
+ <div class="cards">
+  <div class="card"><div class="muted">عدد الأنشطة</div><div class="big" id="count">—</div><div class="hint">ضمن المرشحات</div></div>
+  <div class="card"><div class="muted">متوسط الإنجاز</div><div class="big" id="avg">—</div><div class="hint">متوسط حسابي تجريبي غير موزون</div></div>
+  <div class="card"><div class="muted">أنشطة متعثرة</div><div class="big" id="late">—</div><div class="hint">وفق الحالة المسجلة</div></div>
+  <div class="card"><div class="muted">أنشطة مكتملة</div><div class="big" id="done">—</div><div class="hint">الأنشطة بنسبة إنجاز 100%</div></div>
+ </div>
+ <section class="panel">
+  <div class="panel-head"><h3>سجل الأنشطة</h3><span class="muted" id="mode"></span></div>
+  <div class="table-wrap"><table><thead><tr><th>الرمز</th><th>النشاط</th><th>الدائرة</th><th>الفترة</th><th>المستهدف</th><th>الفعلي</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="rows"><tr><td colspan="8">جاري التحميل…</td></tr></tbody></table></div>
+  <p id="message" class="message" role="status"></p>
+ </section>
+ <p class="notes">هذه واجهة لإثبات الفكرة فقط: البيانات والأنشطة والإشعارات افتراضية. تعديلات Demo مؤقتة وتُفقد عند إعادة تشغيل الخادم. غير صالحة لإدخال بيانات حكومية أو للنشر العام قبل إضافة تسجيل الدخول والصلاحيات وسجل التدقيق وسير الاعتماد.</p>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let items=[], demo=true, periods=[];
+async function getJson(url,options){const r=await fetch(url,options);if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+function selectedQuarters(){const p=periods.find(x=>x.code===$('period').value);return p?p.quarters:['Q1','Q2','Q3','Q4']}
+function render(){
+ const qs=selectedQuarters(),dep=$('department').value;
+ const a=items.filter(x=>qs.includes(x.period)&&(dep==='all'||x.department===dep));
+ $('count').textContent=a.length;
+ $('avg').textContent=a.length?Math.round(a.reduce((s,x)=>s+Number(x.actual),0)/a.length)+'%':'—';
+ $('late').textContent=a.filter(x=>x.status==='متعثر').length;
+ $('done').textContent=a.filter(x=>x.status==='مكتمل').length;
+ $('rows').innerHTML=a.length?a.map(x=>'<tr><td>'+escapeText(x.code||'—')+'</td><td>'+escapeText(x.title)+'</td><td>'+escapeText(x.department)+'</td><td>'+escapeText(x.period)+'</td><td>'+Number(x.target)+'%</td><td>'+Number(x.actual)+'%<div class="progress"><span style="width:'+Math.min(100,Math.max(0,Number(x.actual)))+'%"></span></div></td><td class="'+(x.status==='متعثر'?'alert':x.status==='مكتمل'?'completed':'')+'">'+escapeText(x.status)+'</td><td><button class="small-btn edit" data-id="'+Number(x.id)+'" '+(demo?'':'disabled')+'>تحديث</button></td></tr>').join(''):'<tr><td colspan="8">لا توجد أنشطة ضمن المرشحات</td></tr>';
+}
+async function load(){
+ try{
+  const p=await getJson('/api/reporting-periods');periods=p.items;
+  const d=await getJson('/api/tasks');items=d.items;demo=d.mode==='demo';
+  $('mode').textContent=demo?'وضع Demo (تعديلات مؤقتة)':'MySQL للقراءة فقط';
+  const dep=$('department'),old=dep.value;
+  dep.replaceChildren(new Option('جميع الدوائر','all'),...[...new Set(items.map(x=>x.department))].map(d=>new Option(d,d)));
+  dep.value=[...dep.options].some(x=>x.value===old)?old:'all';
+  $('message').textContent='';render();
+ }catch(e){$('message').textContent='تعذر جلب الأنشطة. تأكدي من تشغيل الخادم.'}
+}
+async function updateTask(id){
+ const t=items.find(x=>Number(x.id)===id);if(!t||!demo)return;
+ const input=prompt('نسبة الإنجاز الجديدة من 0 إلى 100:',t.actual);if(input===null)return;
+ const s=input.trim();if(!/^\d+(\.\d+)?$/.test(s)||Number(s)>100){alert('أدخلي رقماً صحيحاً بين 0 و100');return}
+ try{
+  await getJson('/api/tasks/'+id+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({actual:Number(s)})});
+  await load();$('message').textContent='تم تحديث بيانات العرض التجريبي';
+ }catch(e){$('message').textContent='تعذر حفظ التحديث'}
+}
+async function loadNotifications(){
+ const root=$('notification-list');
+ try{
+  const d=await getJson('/api/notifications');
+  $('unread').textContent=d.items.filter(n=>!n.read).length;
+  root.replaceChildren();
+  if(!d.items.length){root.textContent='لا توجد إشعارات';return}
+  d.items.forEach(n=>{
+   const div=document.createElement('div');div.className='notification'+(n.read?'':' unread');
+   const text=document.createElement('div');const title=document.createElement('strong');title.textContent=n.title;
+   const msg=document.createElement('p');msg.textContent=n.message;text.append(title,msg);div.append(text);
+   const btn=document.createElement('button');btn.className='outline';btn.textContent=n.read?'مقروء':'كمقروء';btn.disabled=n.read;
+   btn.addEventListener('click',async()=>{try{await getJson('/api/notifications/'+n.id+'/read',{method:'POST'});await loadNotifications()}catch(_){alert('تعديل حالة الإشعار غير متاح')}});div.append(btn);root.append(div);
+  });
+ }catch(e){root.textContent='تعذر تحميل الإشعارات'}
+}
+$('bell').addEventListener('click',()=>{const show=$('notifications').hidden;$('notifications').hidden=!show;$('bell').setAttribute('aria-expanded',String(show));if(show)loadNotifications()});
+$('refresh-notifications').addEventListener('click',loadNotifications);
+$('period').addEventListener('change',render);
+$('department').addEventListener('change',render);
+$('reload').addEventListener('click',load);
+$('rows').addEventListener('click',e=>{const b=e.target.closest('button.edit');if(b)updateTask(Number(b.dataset.id))});
+load();loadNotifications();
+</script>
+</body>
+</html>
